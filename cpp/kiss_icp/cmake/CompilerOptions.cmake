@@ -22,8 +22,13 @@
 # SOFTWARE.
 function(set_global_target_properties target)
   target_compile_features(${target} PUBLIC cxx_std_17)
-  target_compile_options(${target} PRIVATE $<$<COMPILE_LANG_AND_ID:CXX,Clang,AppleClang>:-fcolor-diagnostics>)
-  target_compile_options(${target} PRIVATE $<$<COMPILE_LANG_AND_ID:CXX,GNU>:-fdiagnostics-color=always>)
+
+  set(GCC_WARNINGS_FLAGS -Wall -Wextra -Wpedantic)
+  set(MSVC_WARNINGS_FLAGS /W4 /WX)
+  target_compile_options(${target} PRIVATE
+    $<$<COMPILE_LANG_AND_ID:CXX,Clang,AppleClang>:-fcolor-diagnostics ${GCC_WARNINGS_FLAGS}>
+    $<$<COMPILE_LANG_AND_ID:CXX,GNU>:-fdiagnostics-color=always ${GCC_WARNINGS_FLAGS}>
+    $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:${MSVC_WARNINGS_FLAGS}>)
 
   set(INCLUDE_DIRS ${PROJECT_SOURCE_DIR})
   get_filename_component(INCLUDE_DIRS ${INCLUDE_DIRS} PATH)
